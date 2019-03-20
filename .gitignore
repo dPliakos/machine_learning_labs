@@ -1,0 +1,4 @@
+.git
+.virtualenv
+.env
+iris.data
