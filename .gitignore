@@ -2,3 +2,6 @@
 .virtualenv
 .env
 iris.data
+*.un~
+*.pyc
+__pycache__
