@@ -63,6 +63,7 @@ class LabSolver(object):
         # Add 1 at the patterns.
         aces = np.ones([NumberOfPatterns, 1])
         self.patterns = patterns
+
         self.x = np.hstack((patterns, aces))
         self.t = targets
 
@@ -82,24 +83,45 @@ class LabSolver(object):
 
     def cross_validation(self):
         """Perform a cross validation test."""
-        cross_validation = self.get_fold(self.folds, self.patterns, self.t)
+        cross_validation = self.get_fold(self.folds, self.x, self.t)
         fold = next(cross_validation)
 
         while (fold):
             try:
                 fold = next(cross_validation)
-                self.train(fold['xtrain'], fold['ttrain'])
+                # get the weight vector
+                wT = self.train(fold['xtrain'], fold['ttrain'])
+
+                # test the model using the weights.
+                patternScores = self.test(fold['xtest'], fold['ttest'], wT)
+
+                # call the predict function
+                for i in range(len(patternScores)):
+                    current_score = self.predict(patternScores[i])
+
             except StopIteration:
                 break
 
     def train(self, patterns, targets):
         """Find the weights."""
         wT = np.linalg.pinv(patterns).dot(targets)
+        return wT
 
-        patterns = np.array(patterns)
+    def test(self, patterns, targets, w):
+        """Calculate the clasifier output for every pattern."""
+        results = []
+        for i in range(len(patterns)):
+            yi = patterns[i].dot(w)
+            results.append(yi)
 
-        # calculate the y
-        y = patterns.dot(wT)
+        return results
+
+    def predict(self, value):
+        """Decide at what class a pattern belong to."""
+        if value < 0:
+            return 0
+        else:
+            return 1
 
     def evaluate(self):
         """Evaluate the means of the basic metrics."""
@@ -109,3 +131,4 @@ class LabSolver(object):
 if __name__ == "__main__":
     a = LabSolver()
     a.cross_validation()
+    print ("done!")
