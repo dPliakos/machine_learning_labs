@@ -14,10 +14,18 @@ class LabSolver(object):
         self.folds = 9
 
         self.map_dict = {
-          "Iris-setosa": -1,
+          "Iris-setosa": 0,
           "Iris-versicolor": 1,
-          "Iris-virginica": -1
+          "Iris-virginica": 0
         }
+
+        self.criteria = [
+            'accuracy',
+            'precision',
+            'recall',
+            'fmeasure',
+            'specificity'
+        ]
 
         self.data = None
         self.data = self.get_data()
@@ -81,6 +89,82 @@ class LabSolver(object):
 
             yield fold
 
+    def accuracy(self, metrics):
+        """Calculate the accuracy.
+
+        metrics (dict) has all needed metrics (tn, tp, fn, tp)
+        """
+        sum = metrics['tp'] + metrics['tn'] + metrics['fp'] + metrics['fn']
+        if (sum == 0):
+            return 0
+
+        value = (metrics['tp'] + metrics['tn']) / sum
+        return value
+
+    def precision(self, metrics):
+        """Calculate the precision.
+
+        metrics (dict) has all needed metrics (tn, tp, fn, tp)
+        """
+        sum = metrics['tp'] + metrics['fp']
+        if (sum == 0):
+            return 0
+
+        value = metrics['tp'] / sum
+        return value
+
+    def recall(self, metrics):
+        """Calculate the recall.
+
+        metrics (dict) has all needed metrics (tn, tp, fn, tp)
+        """
+        sum = metrics['tp'] + metrics['fn']
+
+        if (sum == 0):
+            return 0
+
+        value = (metrics['tp'] + metrics['fn']) / sum
+        return value
+
+    def fmeasure(self, metrics):
+        """Calculate the fmeasure.
+
+        metrics (dict) has all needed metrics (tn, tp, fn, tp)
+        """
+        sum = self.precision(metrics) + self.recall(metrics)
+
+        if (sum == 0):
+            return 0
+
+        value = (self.precision(metrics) * self.recall(metrics)) / (sum * 2)
+        return value
+
+    def sensitivity(self, metrics):
+        """Calculate the specificity.
+
+        metrics (dict) has all needed metrics (tn, tp, fn, tp)
+        """
+        sum = metrics['tp'] + metrics['fn']
+
+        if (sum == 0):
+            return 0
+
+        value = metrics['tp'] / sum
+        return value
+
+    def specificity(self, metrics):
+        """Calculate the specificity.
+
+        metrics (dict) has all needed metrics (tn, tp, fn, tp)
+        """
+        sum = metrics['tn'] + metrics['fp']
+
+        if (sum == 0):
+            return 0
+
+        value = metrics['tn'] / sum
+        return value
+
     def cross_validation(self):
         """Perform a cross validation test."""
         cross_validation = self.get_fold(self.folds, self.x, self.t)
@@ -96,9 +180,13 @@ class LabSolver(object):
                 patternScores = self.test(fold['xtest'], fold['ttest'], wT)
 
                 # call the predict function
+                determened_output = []
                 for i in range(len(patternScores)):
                     current_score = self.predict(patternScores[i])
+                    determened_output.append(current_score)
 
+                # evaluate
+                self.evaluate(fold['ttest'], determened_output, 'fmeasure')
             except StopIteration:
                 break
 
@@ -120,12 +208,44 @@ class LabSolver(object):
         """Decide at what class a pattern belong to."""
         if value < 0:
             return 0
-        else:
-            return 1
 
-    def evaluate(self):
-        """Evaluate the means of the basic metrics."""
-        pass
+        return 1
+
+    def evaluate(self, targets, predictions, criterion):
+        """Evaluate the means of the basic metrics.
+
+        targets (array): the real targets.
+        predictions (array): the array with the claifier output.
+        criterion (string): The criterion to be used.
+        """
+        if not any(list(map(lambda x: criterion == x, self.criteria))):
+            raise Exception()
+
+        tn = tp = fn = fp = 0
+
+        for i in range(len(targets)):
+            tn += (targets[i] == predictions[i]) and targets[i] == 0
+            tp += (targets[i] == predictions[i]) and targets[i] == 1
+            fn += (targets[i] != predictions[i]) and targets[i] == 1
+            fp += (targets[i] != predictions[i]) and targets[i] == 0
+
+        metrics = {
+            'tn': tn,
+            'tp': tp,
+            'fn': fn,
+            'fp': fp
+        }
+
+        calculated_values = {
+            'accuracy': self.accuracy(metrics),
+            'precision': self.precision(metrics),
+            'recall': self.recall(metrics),
+            'fmeasure': self.fmeasure(metrics),
+            'sensitivity': self.sensitivity(metrics),
+            'specificity': self.specificity(metrics),
+        }
+
+        return calculated_values[criterion]
 
 
 if __name__ == "__main__":
