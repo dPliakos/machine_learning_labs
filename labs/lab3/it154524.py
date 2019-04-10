@@ -60,6 +60,7 @@ class LabSolver(object):
             'precision',
             'recall',
             'fmeasure',
+            'sensitivity'
             'specificity'
         ]
 
@@ -309,6 +310,7 @@ class LabSolver(object):
             'precision': 0.0,
             'recall': 0.0,
             'fmeasure': 0.0,
+            'sensitivity': 0.0
             'specificity': 0.0,
         }
 

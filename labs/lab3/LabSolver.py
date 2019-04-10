@@ -60,6 +60,7 @@ class LabSolver(object):
             'precision',
             'recall',
             'fmeasure',
+            'sensitivity'
             'specificity'
         ]
 
@@ -215,7 +216,7 @@ class LabSolver(object):
             try:
                 # get the weight vector
                 # wT = self.train(fold['xtrain'], fold['ttrain'])
-                wT = self.perceptron(fold['xtrain'], fold['ttrain'], 2000, 0.1)
+                wT = self.perceptron(fold['xtrain'], fold['ttrain'], 20, 0.1)
 
                 # test the model using the weights.
                 patternScores = self.test(fold['xtest'], fold['ttest'], wT)
@@ -309,6 +310,7 @@ class LabSolver(object):
             'precision': 0.0,
             'recall': 0.0,
             'fmeasure': 0.0,
+            'sensitivity': 0.0
             'specificity': 0.0,
         }
 
