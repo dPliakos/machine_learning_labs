@@ -1,4 +1,8 @@
-"""Solves a lab exersice."""
+"""Solves a lab  3 exersice.
+
+The perceptron is the first method of the LabSolver classself.
+The cross validation is the entry point method.
+"""
 
 import pandas as pd
 import numpy as np
@@ -8,6 +12,38 @@ from sklearn.model_selection import train_test_split
 
 class LabSolver(object):
     """Able to solve a machine learning lab."""
+
+    def perceptron(self, x, t, MAXEPOCHS, beta):
+        """Calculate the w.
+
+        x: patterns
+        t: targets
+        MAXEPOCHS: maximum nnumber of epochs
+        beta: the training parameter/step/velocity
+
+        returns: w, the weights vector.
+        """
+
+        w = np.array([9, 9, 9, 9, 9])
+
+        for epoch in range(MAXEPOCHS):  # for every epoch
+
+            change_made = False
+            for p in range(len(x)):  # for every pattern
+                u = x[p].dot(w)
+
+                y = 0
+                if u >= 0:
+                    y = 1
+
+                if t[p] != y:
+                    change_made = True
+                    w = w + x[p].dot(beta * (t[p] - y))
+
+            if not change_made:
+                print ("No change!")
+                break
+        return w
 
     def __init__(self):
         """Initialize the object."""
@@ -178,7 +214,8 @@ class LabSolver(object):
         while (fold):
             try:
                 # get the weight vector
-                wT = self.train(fold['xtrain'], fold['ttrain'])
+                # wT = self.train(fold['xtrain'], fold['ttrain'])
+                wT = self.perceptron(fold['xtrain'], fold['ttrain'], 2000, 0.1)
 
                 # test the model using the weights.
                 patternScores = self.test(fold['xtest'], fold['ttest'], wT)
