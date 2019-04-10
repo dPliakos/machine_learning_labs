@@ -38,10 +38,12 @@ class LabSolver(object):
         try:
             # if runs on student's local machine, try get the local file.
             from local_configuration import LocalConfiguration
+            print ("Student's machine")
+
             configuration = LocalConfiguration()
             data = configuration.read_data()
         except:
-            print ("Data not found, fetching")
+            print ("Data not found locally, fetching...")
             # Else get file from an online resource.
             url_data = 'http://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data'
             # 2
@@ -265,8 +267,34 @@ class LabSolver(object):
 
     def calculate_means(self):
         """Calculate means for all criteria."""
-        for res in self.results:
-            print (res)
+        sums = {
+            'accuracy': 0.0,
+            'precision': 0.0,
+            'recall': 0.0,
+            'fmeasure': 0.0,
+            'specificity': 0.0,
+        }
+
+        for criterion in self.criteria:
+            for fold in self.results:
+                sums[criterion] += fold[criterion]
+
+        length = len(self.t)
+
+        means = {}
+        for criterion in self.criteria:
+            means[criterion] = sums[criterion] / length
+
+        self.means = means
+
+    def show_means(self):
+        """Show means."""
+        if not self.means:
+            print ("Means are not calculated yet.")
+            return
+
+        for criterion in self.criteria:
+            print ("{}: {}".format(criterion, self.means[criterion]))
 
     def add_to_plot(self, targets, predictions, position):
         """Add a subplot of the fold to the plot.
@@ -288,7 +316,10 @@ class LabSolver(object):
 
 if __name__ == "__main__":
     a = LabSolver()
+    print ("Training...")
     a.cross_validation()
+
+    print ("Calculate results...")
     a.calculate_means()
+    a.show_means()
     a.show_plot()
-    print ("done!")
