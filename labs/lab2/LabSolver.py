@@ -125,7 +125,7 @@ class LabSolver(object):
         if (sum == 0):
             return 0
 
-        value = (metrics['tp'] + metrics['fn']) / sum
+        value = metrics['tp'] / sum
         return value
 
     def fmeasure(self, metrics):
@@ -263,6 +263,11 @@ class LabSolver(object):
 
         return calculated_values[criterion]
 
+    def calculate_means(self):
+        """Calculate means for all criteria."""
+        for res in self.results:
+            print (res)
+
     def add_to_plot(self, targets, predictions, position):
         """Add a subplot of the fold to the plot.
 
@@ -284,5 +289,6 @@ class LabSolver(object):
 if __name__ == "__main__":
     a = LabSolver()
     a.cross_validation()
+    a.calculate_means()
     a.show_plot()
     print ("done!")
