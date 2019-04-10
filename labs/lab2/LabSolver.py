@@ -27,6 +27,8 @@ class LabSolver(object):
             'specificity'
         ]
 
+        self.results = []  # placeholder for the results.
+
         self.data = None
         self.data = self.get_data()
         self.prepare_data()
@@ -169,10 +171,10 @@ class LabSolver(object):
         """Perform a cross validation test."""
         cross_validation = self.get_fold(self.folds, self.x, self.t)
         fold = next(cross_validation)
+        fold_index = 0
 
         while (fold):
             try:
-                fold = next(cross_validation)
                 # get the weight vector
                 wT = self.train(fold['xtrain'], fold['ttrain'])
 
@@ -185,8 +187,22 @@ class LabSolver(object):
                     current_score = self.predict(patternScores[i])
                     determened_output.append(current_score)
 
+                fold_results = {}
                 # evaluate
-                self.evaluate(fold['ttest'], determened_output, 'fmeasure')
+                for criterion in self.criteria:
+                    fold_results[criterion] = self.evaluate(fold['ttest'],
+                                                            determened_output,
+                                                            criterion)
+
+                # save the results fot later calculations
+                self.results.append(fold_results)
+
+                # Add to plot
+                fold_index += 1
+                self.add_to_plot(fold['ttest'], determened_output, fold_index)
+
+                # Call next fold
+                fold = next(cross_validation)
             except StopIteration:
                 break
 
@@ -247,8 +263,26 @@ class LabSolver(object):
 
         return calculated_values[criterion]
 
+    def add_to_plot(self, targets, predictions, position):
+        """Add a subplot of the fold to the plot.
+
+        targets: The real targets
+        predictions: The calculated outputs
+        position: The position of the plot inside the grid.
+        """
+        plt.subplot(3, 3, position)
+        plt.plot(targets, 'bo')
+        plt.plot(predictions, 'r.')
+        plt.title('fold ' + str(position + 1))
+
+    def show_plot(self):
+        """Show the plot."""
+        plt.tight_layout()
+        plt.show()
+
 
 if __name__ == "__main__":
     a = LabSolver()
     a.cross_validation()
+    a.show_plot()
     print ("done!")
