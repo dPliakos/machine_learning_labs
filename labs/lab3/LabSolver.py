@@ -1,7 +1,8 @@
 """Solves a lab  3 exersice.
 
 The perceptron is the first method of the LabSolver classself.
-The cross validation is the entry point method.
+
+At the end of the script is the entry point.
 """
 
 import pandas as pd
@@ -23,7 +24,6 @@ class LabSolver(object):
 
         returns: w, the weights vector.
         """
-
         w = np.array([9, 9, 9, 9, 9])
 
         for epoch in range(MAXEPOCHS):  # for every epoch
