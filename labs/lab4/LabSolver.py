@@ -319,14 +319,23 @@ class LabSolver(object):
 
 
 if __name__ == "__main__":
+
+    global show_plot
+    msg = "Show plots (for every solver/neurons combination) y/n[n]: "
+    user_choice = input(msg)
+
+    if user_choice == "y":
+        show_plot = True
+    else:
+        show_plot = False
+
     # "sgd",
     solvers = ["sgd", "adam"]
     N1 = 5, 10, 20, 50, 100
 
     a = LabSolver()
 
-    global show_plot
-    show_plot = True
+
 
     for solver in solvers:
         for n in N1:
