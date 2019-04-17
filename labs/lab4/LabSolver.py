@@ -15,37 +15,6 @@ from sklearn.neural_network import MLPClassifier
 class LabSolver(object):
     """Able to solve a machine learning lab."""
 
-    def perceptron(self, x, t, MAXEPOCHS, beta):
-        """Calculate the w.
-
-        x: patterns
-        t: targets
-        MAXEPOCHS: maximum nnumber of epochs
-        beta: the training parameter/step/velocity
-
-        returns: w, the weights vector.
-        """
-        w = np.array([9, 9, 9, 9, 9])
-
-        for epoch in range(MAXEPOCHS):  # for every epoch
-
-            change_made = False
-            for p in range(len(x)):  # for every pattern
-                u = x[p].dot(w)
-
-                y = 0
-                if u >= 0:
-                    y = 1
-
-                if t[p] != y:
-                    change_made = True
-                    w = w + x[p].dot(beta * (t[p] - y))
-
-            if not change_made:
-                print ("No change!")
-                break
-        return w
-
     def __init__(self):
         """Initialize the object."""
         self.folds = 9
@@ -346,6 +315,10 @@ class LabSolver(object):
         plt.tight_layout()
         plt.show()
 
+    def reset(self):
+        """Reset the model results."""
+        self.results = []
+
 
 if __name__ == "__main__":
     # "sgd",
@@ -364,8 +337,9 @@ if __name__ == "__main__":
             a.cross_validation(n, solver)
             print ("Calculate results...")
             a.calculate_means()
-
             a.show_means()
 
             if show_plot:
                 a.show_plot()
+
+            a.reset()
