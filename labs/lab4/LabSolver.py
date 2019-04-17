@@ -186,7 +186,7 @@ class LabSolver(object):
         model = MLPClassifier(hidden_layer_sizes=[int(NumberOfNeurons)],
                               activation="logistic", solver=solver,
                               learning_rate="constant", max_iter=10000,
-                              momentum=0.95)
+                              learning_rate_init=0.1, momentum=0.95)
 
         while (fold):
             try:
@@ -281,11 +281,9 @@ class LabSolver(object):
             for fold in self.results:
                 sums[criterion] += fold[criterion]
 
-        length = len(self.t)
-
         means = {}
         for criterion in self.criteria:
-            means[criterion] = sums[criterion] / length
+            means[criterion] = sums[criterion] / 9
 
         self.means = means
 
