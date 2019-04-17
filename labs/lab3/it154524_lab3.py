@@ -60,7 +60,7 @@ class LabSolver(object):
             'precision',
             'recall',
             'fmeasure',
-            'sensitivity'
+            'sensitivity',
             'specificity'
         ]
 
@@ -298,7 +298,7 @@ class LabSolver(object):
             'recall': self.recall(metrics),
             'fmeasure': self.fmeasure(metrics),
             'sensitivity': self.sensitivity(metrics),
-            'specificity': self.specificity(metrics),
+            'specificity': self.specificity(metrics)
         }
 
         return calculated_values[criterion]
@@ -310,8 +310,8 @@ class LabSolver(object):
             'precision': 0.0,
             'recall': 0.0,
             'fmeasure': 0.0,
-            'sensitivity': 0.0
-            'specificity': 0.0,
+            'sensitivity': 0.0,
+            'specificity': 0.0
         }
 
         for criterion in self.criteria:
@@ -322,7 +322,7 @@ class LabSolver(object):
 
         means = {}
         for criterion in self.criteria:
-            means[criterion] = sums[criterion] / length
+            means[criterion] = sums[criterion] / 9
 
         self.means = means
 

@@ -318,7 +318,7 @@ class LabSolver(object):
             for fold in self.results:
                 sums[criterion] += fold[criterion]
 
-        length = len(self.t)
+        length = len(self.results)  # total folds
 
         means = {}
         for criterion in self.criteria:
